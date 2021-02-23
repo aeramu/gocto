@@ -1,0 +1,15 @@
+{
+	"module_path": "github.com/aeramu/example",
+	"entity": [
+		"Foo",
+		"Bar"
+	],
+	"service": [
+		"Foo",
+		"Bar"
+	],
+	"adapter": [
+		"FooRepository",
+		"BarClient"
+	]
+}
