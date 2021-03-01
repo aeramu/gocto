@@ -29,8 +29,6 @@ func Run(cmd *cobra.Command, args []string) {
 	os.Mkdir("entity", 0755)
 	os.Mkdir("service", 0755)
 	os.Mkdir("service/api", 0755)
-	os.Mkdir("repository", 0755)
-	os.Mkdir("handler", 0755)
 	os.Mkdir("cmd", 0755)
 	g.Generate()
 	log.Println("Done.")

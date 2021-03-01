@@ -147,21 +147,42 @@ func (g *Generator) generateInterface() {
 }
 
 func (g *Generator) generateTest() {
+	initTest := types.NewFunction("initTest")
+	for _, interfaceName := range g.InterfacesName {
+		initTest.AddStatement("mock%s = new(mocks.%s)", interfaceName, interfaceName)
+	}
+	initTest.AddStatement("adapter = Adapter {")
+	for _, interfaceName := range g.InterfacesName {
+		initTest.AddStatement("\t%s: mock%s,", interfaceName, interfaceName)
+	}
+	initTest.AddStatement("}")
+
 	var testFunctions []types.Function
 	for _, methodName := range g.MethodsName {
 		testFunctions = append(testFunctions,
 			*types.NewFunction(fmt.Sprintf("Test_%s_%s", "service", methodName)).
 				AddParam(types.NewVariable("t", "*testing.T")).
-				AddStatement(fmt.Sprintf(testTemplate, methodName, methodName, methodName)))
+				AddStatement(testTemplate, methodName, methodName, methodName, methodName))
 	}
 
 	testBuffer := &buffer.Buffer{}
 	header := types.NewHeader("service")
 	header.AddImportedPackage("context")
 	header.AddImportedPackage("github.com/stretchr/testify/assert")
+	header.AddImportedPackage(g.ModulePath + "/mocks")
 	header.AddImportedPackage(g.ModulePath + "/service/api")
 	header.AddImportedPackage("testing")
 	header.Render(testBuffer)
+
+	testBuffer.Println("")
+	testBuffer.Println("var (")
+	testBuffer.Println("\tadapter Adapter")
+	for _, interfaceName := range g.InterfacesName {
+		testBuffer.Println("\tmock%s *mocks.%s", interfaceName, interfaceName)
+	}
+	testBuffer.Println(")")
+
+	initTest.Render(testBuffer)
 	for _, renderer := range testFunctions {
 		renderer.Render(testBuffer)
 	}
@@ -182,29 +203,43 @@ func responseType(s string) string {
 }
 
 const (
-	testTemplate = `type fields struct {
-		adapter Adapter
-	}
+	testTemplate = `var (
+		ctx = context.Background()
+	)
 	type args struct {
 		ctx context.Context
 		req api.%sReq
 	}
 	tests := []struct {
 		name    string
-		fields  fields
 		prepare func()
 		args    args
 		want    *api.%sRes
 		wantErr bool
 	}{
+		{
+			name:    "should error",
+			prepare: func(){
+
+			},
+			args:    args{
+				ctx: ctx,
+				req: api.%sReq{},
+			},
+			want:    nil,
+			wantErr: true,
+		},
 		// TODO: Add test cases.
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			s := &service{
-				adapter: tt.fields.adapter,
+			initTest()
+			if tt.prepare != nil {
+				tt.prepare()
 			}
-			tt.prepare()
+			s := &service{
+				adapter: adapter,
+			}
 			got, err := s.%s(tt.args.ctx, tt.args.req)
 			if tt.wantErr {
 				assert.Error(t, err)
