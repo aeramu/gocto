@@ -1,9 +1,9 @@
 package main
 
 import (
+	"github.com/aeramu/gocto/cmd/generate"
+	initcmd "github.com/aeramu/gocto/cmd/init"
 	"github.com/spf13/cobra"
-	"gocto/cmd/generate"
-	initcmd "gocto/cmd/init"
 )
 
 var (

@@ -2,8 +2,8 @@ package generate
 
 import (
 	"encoding/json"
-	"gocto/pkg/generator"
-	"gocto/pkg/schema"
+	"github.com/aeramu/gocto/pkg/generator"
+	"github.com/aeramu/gocto/pkg/schema"
 
 	"io/ioutil"
 	"log"

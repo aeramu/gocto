@@ -1,4 +1,4 @@
-module gocto
+module github.com/aeramu/gocto
 
 go 1.15
 

@@ -2,8 +2,8 @@ package generator
 
 import (
 	"fmt"
-	"gocto/pkg/buffer"
-	"gocto/pkg/types"
+	"github.com/aeramu/gocto/pkg/buffer"
+	"github.com/aeramu/gocto/pkg/types"
 	"os"
 )
 

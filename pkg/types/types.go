@@ -2,7 +2,7 @@ package types
 
 import (
 	"fmt"
-	"gocto/pkg/buffer"
+	"github.com/aeramu/gocto/pkg/buffer"
 )
 
 type Struct struct {

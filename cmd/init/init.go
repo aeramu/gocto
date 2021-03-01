@@ -3,8 +3,8 @@ package init
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/aeramu/gocto/pkg/schema"
 	"github.com/spf13/cobra"
-	"gocto/pkg/schema"
 	"log"
 	"os"
 )
