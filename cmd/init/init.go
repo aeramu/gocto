@@ -31,7 +31,20 @@ func Run(cmd *cobra.Command, args []string) {
 		log.Fatalln("failed write schema to file")
 	}
 	f, err = os.Create("Makefile")
-	b = []byte(fmt.Sprintf("generate:\n\tgo mod init %s\n\tgocto generate\n\tmockery --all\n\tgo mod tidy", args[0]))
+	if err != nil {
+		log.Fatalln("failed create makefile")
+	}
+	b = []byte(fmt.Sprintf(
+		"generate:\n" +
+			"\tgo mod init %s\n" +
+			"\tgocto generate\n" +
+			"\tmockery --all\n" +
+			"\tgo mod tidy\n" +
+			"mock:\n" +
+			"\tmockery --all\n" +
+			"test:\n" +
+			"\tgo test ./...\n",
+			args[0]))
 	if _, err := f.Write(b); err != nil {
 		log.Fatalln("failed write makefile")
 	}
