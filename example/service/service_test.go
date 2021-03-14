@@ -25,7 +25,6 @@ func initTest()  {
 
 func Test_service_Foo(t *testing.T)  {
 	var (
-		ctx = context.Background()
 	)
 	type args struct {
 		ctx context.Context
@@ -38,18 +37,6 @@ func Test_service_Foo(t *testing.T)  {
 		want    *api.FooRes
 		wantErr bool
 	}{
-		{
-			name:    "should error",
-			prepare: func(){
-
-			},
-			args:    args{
-				ctx: ctx,
-				req: api.FooReq{},
-			},
-			want:    nil,
-			wantErr: true,
-		},
 		// TODO: Add test cases.
 	}
 	for _, tt := range tests {
@@ -75,7 +62,6 @@ func Test_service_Foo(t *testing.T)  {
 
 func Test_service_Bar(t *testing.T)  {
 	var (
-		ctx = context.Background()
 	)
 	type args struct {
 		ctx context.Context
@@ -88,18 +74,6 @@ func Test_service_Bar(t *testing.T)  {
 		want    *api.BarRes
 		wantErr bool
 	}{
-		{
-			name:    "should error",
-			prepare: func(){
-
-			},
-			args:    args{
-				ctx: ctx,
-				req: api.BarReq{},
-			},
-			want:    nil,
-			wantErr: true,
-		},
 		// TODO: Add test cases.
 	}
 	for _, tt := range tests {

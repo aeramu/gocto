@@ -128,14 +128,11 @@ func (g *Generator) generateInterface() {
 	var interfaces []types.Interface
 	for _, interfaceName := range g.InterfacesName {
 		adapter.AddVariable(types.NewVariable(interfaceName, interfaceName))
-		interfaces = append(interfaces, *types.NewInterface(interfaceName).
-			AddMethod(*types.NewMethod("Foo").
-				AddParam(types.NewVariable("ctx", "context.Context")).
-				AddReturn("error")))
+		interfaces = append(interfaces, *types.NewInterface(interfaceName))
 	}
 
 	b := &buffer.Buffer{}
-	header := types.NewHeader("service").AddImportedPackage("context")
+	header := types.NewHeader("service")
 	header.Render(b)
 	adapter.Render(b)
 	for _, renderer := range interfaces {
@@ -162,7 +159,7 @@ func (g *Generator) generateTest() {
 		testFunctions = append(testFunctions,
 			*types.NewFunction(fmt.Sprintf("Test_%s_%s", "service", methodName)).
 				AddParam(types.NewVariable("t", "*testing.T")).
-				AddStatement(testTemplate, methodName, methodName, methodName, methodName))
+				AddStatement(testTemplate, methodName, methodName, methodName))
 	}
 
 	testBuffer := &buffer.Buffer{}
@@ -204,7 +201,7 @@ func responseType(s string) string {
 
 const (
 	testTemplate = `var (
-		ctx = context.Background()
+
 	)
 	type args struct {
 		ctx context.Context
@@ -217,18 +214,6 @@ const (
 		want    *api.%sRes
 		wantErr bool
 	}{
-		{
-			name:    "should error",
-			prepare: func(){
-
-			},
-			args:    args{
-				ctx: ctx,
-				req: api.%sReq{},
-			},
-			want:    nil,
-			wantErr: true,
-		},
 		// TODO: Add test cases.
 	}
 	for _, tt := range tests {
