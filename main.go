@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/aeramu/gocto/cmd/generate"
 	initcmd "github.com/aeramu/gocto/cmd/init"
+	"github.com/aeramu/gocto/cmd/service"
 	"github.com/spf13/cobra"
 )
 
@@ -18,10 +19,18 @@ var (
 		Use: "init",
 		Run: initcmd.Run,
 	}
+	serviceCmd = &cobra.Command{
+		Use: "service",
+	}
+	serviceAddCmd = &cobra.Command{
+		Use: "add",
+		Run: service.Add,
+	}
 )
 
 func init() {
-	cmd.AddCommand(generateCmd, initCmd)
+	serviceCmd.AddCommand(serviceAddCmd)
+	cmd.AddCommand(generateCmd, initCmd, serviceCmd)
 }
 
 func main() {

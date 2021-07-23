@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/aeramu/gocto/pkg/buffer"
 	"github.com/aeramu/gocto/pkg/types"
+	"log"
 	"os"
 )
 
@@ -20,6 +21,38 @@ func (g *Generator) Generate() {
 	g.generateAPIFile()
 	g.generateTestFile()
 	g.generateInterfaceFile()
+}
+
+func (g *Generator) AddService(methodName string) {
+	service := serviceFunction(methodName)
+	test := testFunction(methodName)
+	requestStruct := types.NewStruct(requestType(methodName))
+	responseStruct := types.NewStruct(responseType(methodName))
+	apiValidation := apiValidationFunction(methodName)
+
+	b := &buffer.Buffer{}
+	service.Render(b)
+	serviceFile, err := os.OpenFile("service/" + "service.go", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	b.Flush(serviceFile)
+
+	test.Render(b)
+	testFile, err := os.OpenFile("service/" + "service_test.go", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	b.Flush(testFile)
+
+	requestStruct.Render(b)
+	responseStruct.Render(b)
+	apiValidation.Render(b)
+	apiFile, err := os.OpenFile("service/api/" + "api.go", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	b.Flush(apiFile)
 }
 
 func (g *Generator) generateEntityFile() {
