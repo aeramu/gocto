@@ -24,12 +24,12 @@ func (g *Generator) generateTest() {
 	}
 
 	testBuffer := &buffer.Buffer{}
-	header := types.NewHeader("service")
-	header.AddImportedPackage("context")
-	header.AddImportedPackage("github.com/stretchr/testify/assert")
-	header.AddImportedPackage(g.ModulePath + "/mocks")
-	header.AddImportedPackage(g.ModulePath + "/service/api")
-	header.AddImportedPackage("testing")
+	header := types.NewHeader("service").
+		AddImportedPackage("context").
+		AddImportedPackage("github.com/stretchr/testify/assert").
+		AddImportedPackage(g.ModulePath + "/mocks").
+		AddImportedPackage(g.ModulePath + "/service/api").
+		AddImportedPackage("testing")
 	header.Render(testBuffer)
 
 	testBuffer.Println("")
@@ -53,7 +53,7 @@ func (g *Generator) generateTest() {
 }
 
 func testFunction(methodName string) types.Function {
-	return *types.NewFunction(fmt.Sprintf("Test_%s_%s", "service", methodName)).
+	return types.NewFunction(fmt.Sprintf("Test_%s_%s", "service", methodName)).
 		AddParam(types.NewVariable("t", "*testing.T")).
 		AddStatement(testTemplate, methodName, methodName, methodName)
 }

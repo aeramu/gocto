@@ -26,7 +26,7 @@ func (g *Generator) generateEntity() {
 	var entities []types.Struct
 	for _, entityName := range g.EntitiesName {
 		entity := types.NewStruct(entityName)
-		entities = append(entities, *entity)
+		entities = append(entities, entity)
 	}
 	entityBuffer := &buffer.Buffer{}
 	header := types.NewHeader("entity")
@@ -51,12 +51,12 @@ func (g *Generator) generateService() {
 			AddParam(types.NewVariable("req", "api."+requestType(methodName))).
 			AddReturn("*" + "api." + responseType(methodName)).
 			AddReturn("error")
-		serviceInterface.AddMethod(*method)
+		serviceInterface.AddMethod(method)
 
 		implementFunction := types.NewFunctionFromMethod(method).
 			WithReceiver(types.NewVariable("s", "*service")).
 			AddStatement("panic(\"implement me\")")
-		serviceImplementations = append(serviceImplementations, *implementFunction)
+		serviceImplementations = append(serviceImplementations, implementFunction)
 	}
 
 	// generate service constructor
@@ -72,9 +72,9 @@ func (g *Generator) generateService() {
 	serviceStruct := types.NewStruct("service").AddVariable(adapter)
 
 	serviceBuffer := &buffer.Buffer{}
-	header := types.NewHeader("service")
-	header.AddImportedPackage("context")
-	header.AddImportedPackage(g.ModulePath + "/service/api")
+	header := types.NewHeader("service").
+		AddImportedPackage("context").
+		AddImportedPackage(g.ModulePath + "/service/api")
 	header.Render(serviceBuffer)
 	serviceInterface.Render(serviceBuffer)
 	serviceConstructor.Render(serviceBuffer)
@@ -96,13 +96,13 @@ func (g *Generator) generateAPI() {
 	for _, methodName := range g.MethodsName {
 		requestStruct := types.NewStruct(requestType(methodName))
 		responseStruct := types.NewStruct(responseType(methodName))
-		serviceAPI = append(serviceAPI, *requestStruct, *responseStruct)
+		serviceAPI = append(serviceAPI, requestStruct, responseStruct)
 
 		validateFunction := types.NewFunction("Validate").
 			WithReceiver(types.NewVariable("req", requestType(methodName))).
 			AddReturn("error").
 			AddStatement("return nil")
-		serviceAPIValidation = append(serviceAPIValidation, *validateFunction)
+		serviceAPIValidation = append(serviceAPIValidation, validateFunction)
 	}
 
 	apiBuffer := &buffer.Buffer{}
@@ -128,7 +128,7 @@ func (g *Generator) generateInterface() {
 	var interfaces []types.Interface
 	for _, interfaceName := range g.InterfacesName {
 		adapter.AddVariable(types.NewVariable(interfaceName, interfaceName))
-		interfaces = append(interfaces, *types.NewInterface(interfaceName))
+		interfaces = append(interfaces, types.NewInterface(interfaceName))
 	}
 
 	b := &buffer.Buffer{}
