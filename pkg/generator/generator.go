@@ -97,8 +97,8 @@ func (g *Generator) generateServiceFile() {
 func (g *Generator) generateAPIFile() {
 	header := types.NewHeader("api")
 
-	var serviceAPI []types.Struct
-	var serviceAPIValidation []types.Function
+	serviceAPI := []types.Struct{}
+	serviceAPIValidation := []types.Function{}
 	for _, methodName := range g.MethodsName {
 		requestStruct := types.NewStruct(requestType(methodName))
 		responseStruct := types.NewStruct(responseType(methodName))
@@ -113,11 +113,9 @@ func (g *Generator) generateAPIFile() {
 
 	apiBuffer := &buffer.Buffer{}
 	header.Render(apiBuffer)
-	for _, renderer := range serviceAPI {
-		renderer.Render(apiBuffer)
-	}
-	for _, renderer := range serviceAPIValidation {
-		renderer.Render(apiBuffer)
+	for i := range g.MethodsName {
+		serviceAPI[i].Render(apiBuffer)
+		serviceAPIValidation[i].Render(apiBuffer)
 	}
 
 	apiFile, err := os.Create("service/api/" + "api.go")
