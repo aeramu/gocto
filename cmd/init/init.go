@@ -41,9 +41,9 @@ func Run(cmd *cobra.Command, args []string) {
 			"\tmockery --all\n" +
 			"\tgo mod tidy\n" +
 			"mock:\n" +
-			"\tmockery --all\n" +
+			"\tmockery --all --dir service\n" +
 			"test:\n" +
-			"\tgo test ./...\n",
+			"\tgo test ./... --cover\n",
 			args[0]))
 	if _, err := f.Write(b); err != nil {
 		log.Fatalln("failed write makefile")
