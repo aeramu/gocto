@@ -15,25 +15,28 @@ type Generator struct {
 }
 
 func (g *Generator) Generate() {
-	g.generateEntity()
-	g.generateService()
-	g.generateAPI()
-	g.generateTest()
-	g.generateInterface()
+	g.generateEntityFile()
+	g.generateServiceFile()
+	g.generateAPIFile()
+	g.generateTestFile()
+	g.generateInterfaceFile()
 }
 
-func (g *Generator) generateEntity() {
+func (g *Generator) generateEntityFile() {
+	header := types.NewHeader("entity")
+
 	var entities []types.Struct
 	for _, entityName := range g.EntitiesName {
 		entity := types.NewStruct(entityName)
 		entities = append(entities, entity)
 	}
+
 	entityBuffer := &buffer.Buffer{}
-	header := types.NewHeader("entity")
 	header.Render(entityBuffer)
 	for _, renderer := range entities {
 		renderer.Render(entityBuffer)
 	}
+
 	entityFile, err := os.Create("entity/" + "entity.go")
 	if err != nil {
 		panic(err)
@@ -41,7 +44,11 @@ func (g *Generator) generateEntity() {
 	entityBuffer.Flush(entityFile)
 }
 
-func (g *Generator) generateService() {
+func (g *Generator) generateServiceFile() {
+	header := types.NewHeader("service").
+		AddImportedPackage("context").
+		AddImportedPackage(g.ModulePath + "/service/api")
+
 	// generate service interface, implementation
 	serviceInterface := types.NewInterface("Service")
 	var serviceImplementations []types.Function
@@ -72,9 +79,6 @@ func (g *Generator) generateService() {
 	serviceStruct := types.NewStruct("service").AddVariable(adapter)
 
 	serviceBuffer := &buffer.Buffer{}
-	header := types.NewHeader("service").
-		AddImportedPackage("context").
-		AddImportedPackage(g.ModulePath + "/service/api")
 	header.Render(serviceBuffer)
 	serviceInterface.Render(serviceBuffer)
 	serviceConstructor.Render(serviceBuffer)
@@ -90,7 +94,9 @@ func (g *Generator) generateService() {
 	serviceBuffer.Flush(serviceFile)
 }
 
-func (g *Generator) generateAPI() {
+func (g *Generator) generateAPIFile() {
+	header := types.NewHeader("api")
+
 	var serviceAPI []types.Struct
 	var serviceAPIValidation []types.Function
 	for _, methodName := range g.MethodsName {
@@ -106,7 +112,6 @@ func (g *Generator) generateAPI() {
 	}
 
 	apiBuffer := &buffer.Buffer{}
-	header := types.NewHeader("api")
 	header.Render(apiBuffer)
 	for _, renderer := range serviceAPI {
 		renderer.Render(apiBuffer)
@@ -122,7 +127,9 @@ func (g *Generator) generateAPI() {
 	apiBuffer.Flush(apiFile)
 }
 
-func (g *Generator) generateInterface() {
+func (g *Generator) generateInterfaceFile() {
+	header := types.NewHeader("service")
+
 	// generate adapter struct
 	adapter := types.NewStruct("Adapter")
 	var interfaces []types.Interface
@@ -132,7 +139,6 @@ func (g *Generator) generateInterface() {
 	}
 
 	b := &buffer.Buffer{}
-	header := types.NewHeader("service")
 	header.Render(b)
 	adapter.Render(b)
 	for _, renderer := range interfaces {
@@ -143,6 +149,52 @@ func (g *Generator) generateInterface() {
 	b.Flush(f)
 }
 
+func (g *Generator) generateTestFile() {
+	header := types.NewHeader("service").
+		AddImportedPackage("context").
+		AddImportedPackage("github.com/stretchr/testify/assert").
+		AddImportedPackage(g.ModulePath + "/mocks").
+		AddImportedPackage(g.ModulePath + "/service/api").
+		AddImportedPackage("testing")
+
+	initTest := types.NewFunction("initTest")
+	for _, interfaceName := range g.InterfacesName {
+		initTest.AddStatement("mock%s = new(mocks.%s)", interfaceName, interfaceName)
+	}
+	initTest.AddStatement("adapter = Adapter {")
+	for _, interfaceName := range g.InterfacesName {
+		initTest.AddStatement("\t%s: mock%s,", interfaceName, interfaceName)
+	}
+	initTest.AddStatement("}")
+
+	var testFunctions []types.Function
+	for _, methodName := range g.MethodsName {
+		testFunctions = append(testFunctions, testFunction(methodName))
+	}
+
+	testBuffer := &buffer.Buffer{}
+	header.Render(testBuffer)
+
+	testBuffer.Println("")
+	testBuffer.Println("var (")
+	testBuffer.Println("\tadapter Adapter")
+	for _, interfaceName := range g.InterfacesName {
+		testBuffer.Println("\tmock%s *mocks.%s", interfaceName, interfaceName)
+	}
+	testBuffer.Println(")")
+
+	initTest.Render(testBuffer)
+	for _, renderer := range testFunctions {
+		renderer.Render(testBuffer)
+	}
+
+	testFile, err := os.Create("service/" + "service_test.go")
+	if err != nil {
+		panic(err)
+	}
+	testBuffer.Flush(testFile)
+}
+
 func requestType(s string) string {
 	return fmt.Sprintf("%sReq", s)
 }
@@ -150,3 +202,47 @@ func requestType(s string) string {
 func responseType(s string) string {
 	return fmt.Sprintf("%sRes", s)
 }
+
+func testFunction(methodName string) types.Function {
+	return types.NewFunction(fmt.Sprintf("Test_%s_%s", "service", methodName)).
+		AddParam(types.NewVariable("t", "*testing.T")).
+		AddStatement(testTemplate, methodName, methodName, methodName)
+}
+
+const (
+	testTemplate = `var (
+
+	)
+	type args struct {
+		ctx context.Context
+		req api.%sReq
+	}
+	tests := []struct {
+		name    string
+		prepare func()
+		args    args
+		want    *api.%sRes
+		wantErr bool
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			initTest()
+			if tt.prepare != nil {
+				tt.prepare()
+			}
+			s := &service{
+				adapter: adapter,
+			}
+			got, err := s.%s(tt.args.ctx, tt.args.req)
+			if tt.wantErr {
+				assert.Error(t, err)
+				assert.Nil(t, got)
+			} else {
+				assert.Nil(t, err)
+				assert.Equal(t, tt.want, got)
+			}
+		})
+	}`
+)
