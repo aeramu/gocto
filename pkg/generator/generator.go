@@ -53,16 +53,8 @@ func (g *Generator) generateServiceFile() {
 	serviceInterface := types.NewInterface("Service")
 	var serviceImplementations []types.Function
 	for _, methodName := range g.MethodsName {
-		method := types.NewMethod(methodName).
-			AddParam(types.NewVariable("ctx", "context.Context")).
-			AddParam(types.NewVariable("req", "api."+requestType(methodName))).
-			AddReturn("*" + "api." + responseType(methodName)).
-			AddReturn("error")
-		serviceInterface.AddMethod(method)
-
-		implementFunction := types.NewFunctionFromMethod(method).
-			WithReceiver(types.NewVariable("s", "*service")).
-			AddStatement("panic(\"implement me\")")
+		implementFunction := serviceFunction(methodName)
+		serviceInterface.AddMethod(implementFunction.Method)
 		serviceImplementations = append(serviceImplementations, implementFunction)
 	}
 
@@ -205,6 +197,17 @@ func testFunction(methodName string) types.Function {
 	return types.NewFunction(fmt.Sprintf("Test_%s_%s", "service", methodName)).
 		AddParam(types.NewVariable("t", "*testing.T")).
 		AddStatement(testTemplate, methodName, methodName, methodName)
+}
+
+func serviceFunction(methodName string) types.Function {
+	method := types.NewMethod(methodName).
+		AddParam(types.NewVariable("ctx", "context.Context")).
+		AddParam(types.NewVariable("req", "api."+requestType(methodName))).
+		AddReturn("*" + "api." + responseType(methodName)).
+		AddReturn("error")
+	return types.NewFunctionFromMethod(method).
+		WithReceiver(types.NewVariable("s", "*service")).
+		AddStatement("panic(\"implement me\")")
 }
 
 const (
