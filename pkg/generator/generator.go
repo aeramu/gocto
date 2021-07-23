@@ -96,10 +96,7 @@ func (g *Generator) generateAPIFile() {
 		responseStruct := types.NewStruct(responseType(methodName))
 		serviceAPI = append(serviceAPI, requestStruct, responseStruct)
 
-		validateFunction := types.NewFunction("Validate").
-			WithReceiver(types.NewVariable("req", requestType(methodName))).
-			AddReturn("error").
-			AddStatement("return nil")
+		validateFunction := apiValidationFunction(methodName)
 		serviceAPIValidation = append(serviceAPIValidation, validateFunction)
 	}
 
@@ -208,6 +205,13 @@ func serviceFunction(methodName string) types.Function {
 	return types.NewFunctionFromMethod(method).
 		WithReceiver(types.NewVariable("s", "*service")).
 		AddStatement("panic(\"implement me\")")
+}
+
+func apiValidationFunction(methodName string) types.Function {
+	return types.NewFunction("Validate").
+		WithReceiver(types.NewVariable("req", requestType(methodName))).
+		AddReturn("error").
+		AddStatement("return nil")
 }
 
 const (
