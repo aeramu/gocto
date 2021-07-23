@@ -10,8 +10,8 @@ type Struct struct {
 	Variables []Variable
 }
 
-func NewStruct(name string) *Struct {
-	return &Struct{Name: name}
+func NewStruct(name string) Struct {
+	return Struct{Name: name}
 }
 
 func (t Struct) Render(b *buffer.Buffer) {
@@ -25,7 +25,7 @@ func (t Struct) Render(b *buffer.Buffer) {
 	b.Println("}")
 }
 
-func (t *Struct) AddVariable(variable Variable) *Struct {
+func (t Struct) AddVariable(variable Variable) Struct {
 	t.Variables = append(t.Variables, variable)
 	return t
 }
@@ -35,8 +35,8 @@ type Interface struct {
 	Methods []Method
 }
 
-func NewInterface(name string) *Interface {
-	return &Interface{Name: name}
+func NewInterface(name string) Interface {
+	return Interface{Name: name}
 }
 
 func (t Interface) Render(b *buffer.Buffer) {
@@ -50,24 +50,24 @@ func (t Interface) Render(b *buffer.Buffer) {
 	b.Println("}")
 }
 
-func (t *Interface) AddMethod(method Method) *Interface {
+func (t Interface) AddMethod(method Method) Interface {
 	t.Methods = append(t.Methods, method)
 	return t
 }
 
 type Function struct {
-	*Method
+	Method
 	Receiver   *Variable
 	Statements []string
 }
 
-func NewFunction(name string) *Function {
+func NewFunction(name string) Function {
 	method := NewMethod(name)
-	return &Function{Method: method}
+	return Function{Method: method}
 }
 
-func NewFunctionFromMethod(method *Method) *Function {
-	return &Function{Method: method}
+func NewFunctionFromMethod(method Method) Function {
+	return Function{Method: method}
 }
 
 func (t Function) Render(b *buffer.Buffer) {
@@ -87,22 +87,22 @@ func (t Function) Render(b *buffer.Buffer) {
 	b.Println("}")
 }
 
-func (t *Function) WithReceiver(variable Variable) *Function {
+func (t Function) WithReceiver(variable Variable) Function {
 	t.Receiver = &variable
 	return t
 }
 
-func (t *Function) AddParam(variable Variable) *Function {
+func (t Function) AddParam(variable Variable) Function {
 	t.Params = append(t.Params, variable)
 	return t
 }
 
-func (t *Function) AddReturn(ret string) *Function {
+func (t Function) AddReturn(ret string) Function {
 	t.Returns = append(t.Returns, ret)
 	return t
 }
 
-func (t *Function) AddStatement(statement string, values ...interface{}) *Function {
+func (t Function) AddStatement(statement string, values ...interface{}) Function {
 	t.Statements = append(t.Statements, fmt.Sprintf(statement, values...))
 	return t
 }
@@ -113,8 +113,8 @@ type Method struct {
 	Returns []string
 }
 
-func NewMethod(name string) *Method {
-	return &Method{Name: name}
+func NewMethod(name string) Method {
+	return Method{Name: name}
 }
 
 func (t Method) Render(b *buffer.Buffer) {
@@ -124,17 +124,17 @@ func (t Method) Render(b *buffer.Buffer) {
 	t.renderReturns(b)
 }
 
-func (t *Method) AddParam(variable Variable) *Method {
+func (t Method) AddParam(variable Variable) Method {
 	t.Params = append(t.Params, variable)
 	return t
 }
 
-func (t *Method) AddReturn(ret string) *Method {
+func (t Method) AddReturn(ret string) Method {
 	t.Returns = append(t.Returns, ret)
 	return t
 }
 
-func (t *Method) renderParams(b *buffer.Buffer) {
+func (t Method) renderParams(b *buffer.Buffer) {
 	b.Print("(")
 	for i, param := range t.Params {
 		param.Render(b)
@@ -145,7 +145,7 @@ func (t *Method) renderParams(b *buffer.Buffer) {
 	b.Print(")")
 }
 
-func (t *Method) renderReturns(b *buffer.Buffer) {
+func (t Method) renderReturns(b *buffer.Buffer) {
 	if len(t.Returns) == 0 {
 		return
 	} else if len(t.Returns) == 1 {
@@ -183,11 +183,11 @@ type Header struct {
 	ImportedPackages []string
 }
 
-func NewHeader(name string) *Header {
-	return &Header{PackageName: name}
+func NewHeader(name string) Header {
+	return Header{PackageName: name}
 }
 
-func (t *Header) Render(b *buffer.Buffer) {
+func (t Header) Render(b *buffer.Buffer) {
 	b.Println("package %s", t.PackageName)
 	if len(t.ImportedPackages) > 0 {
 		b.Println("")
@@ -199,7 +199,7 @@ func (t *Header) Render(b *buffer.Buffer) {
 	}
 }
 
-func (t *Header) AddImportedPackage(packageName string) *Header {
+func (t Header) AddImportedPackage(packageName string) Header {
 	t.ImportedPackages = append(t.ImportedPackages, packageName)
 	return t
 }
