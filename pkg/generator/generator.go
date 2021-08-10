@@ -122,12 +122,14 @@ func (g *Generator) generateServiceFile() {
 func (g *Generator) generateAPIFile() {
 	header := types.NewHeader("api")
 
-	serviceAPI := []types.Struct{}
+	serviceAPIRequest := []types.Struct{}
+	serviceAPIResponse := []types.Struct{}
 	serviceAPIValidation := []types.Function{}
 	for _, methodName := range g.MethodsName {
 		requestStruct := types.NewStruct(requestType(methodName))
 		responseStruct := types.NewStruct(responseType(methodName))
-		serviceAPI = append(serviceAPI, requestStruct, responseStruct)
+		serviceAPIRequest = append(serviceAPIRequest, requestStruct)
+		serviceAPIResponse = append(serviceAPIResponse, responseStruct)
 
 		validateFunction := apiValidationFunction(methodName)
 		serviceAPIValidation = append(serviceAPIValidation, validateFunction)
@@ -136,7 +138,8 @@ func (g *Generator) generateAPIFile() {
 	apiBuffer := &buffer.Buffer{}
 	header.Render(apiBuffer)
 	for i := range g.MethodsName {
-		serviceAPI[i].Render(apiBuffer)
+		serviceAPIRequest[i].Render(apiBuffer)
+		serviceAPIResponse[i].Render(apiBuffer)
 		serviceAPIValidation[i].Render(apiBuffer)
 	}
 
