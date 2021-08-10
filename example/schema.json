@@ -1,15 +1,14 @@
 {
-	"module_path": "github.com/aeramu/example",
+	"module_path": "github.com/aeramu/gocto/example",
 	"entity": [
-		"Foo",
-		"Bar"
+		"Book"
 	],
 	"service": [
-		"Foo",
-		"Bar"
+		"GetBookByISBN",
+		"GetBookByID",
+		"InsertBook"
 	],
 	"adapter": [
-		"FooRepository",
-		"BarClient"
+		"BookRepository"
 	]
 }

@@ -1,7 +1,4 @@
 package entity
 
-type Foo struct {
-}
-
-type Bar struct {
+type Book struct {
 }

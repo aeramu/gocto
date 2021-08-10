@@ -1,12 +1,8 @@
 package service
 
 type Adapter struct {
-	FooRepository FooRepository
-	BarClient BarClient
+	BookRepository BookRepository
 }
 
-type FooRepository interface {
-}
-
-type BarClient interface {
+type BookRepository interface {
 }

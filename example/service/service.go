@@ -2,12 +2,13 @@ package service
 
 import (
 	"context"
-	"github.com/aeramu/example/service/api"
+	"github.com/aeramu/gocto/example/service/api"
 )
 
 type Service interface {
-	Foo(ctx context.Context, req api.FooReq) (*api.FooRes, error)
-	Bar(ctx context.Context, req api.BarReq) (*api.BarRes, error)
+	GetBookByISBN(ctx context.Context, req api.GetBookByISBNReq) (*api.GetBookByISBNRes, error)
+	GetBookByID(ctx context.Context, req api.GetBookByIDReq) (*api.GetBookByIDRes, error)
+	InsertBook(ctx context.Context, req api.InsertBookReq) (*api.InsertBookRes, error)
 }
 
 func NewService(adapter Adapter) Service {
@@ -20,10 +21,14 @@ type service struct {
 	adapter Adapter
 }
 
-func (s *service) Foo(ctx context.Context, req api.FooReq) (*api.FooRes, error) {
+func (s *service) GetBookByISBN(ctx context.Context, req api.GetBookByISBNReq) (*api.GetBookByISBNRes, error) {
 	panic("implement me")
 }
 
-func (s *service) Bar(ctx context.Context, req api.BarReq) (*api.BarRes, error) {
+func (s *service) GetBookByID(ctx context.Context, req api.GetBookByIDReq) (*api.GetBookByIDRes, error) {
+	panic("implement me")
+}
+
+func (s *service) InsertBook(ctx context.Context, req api.InsertBookReq) (*api.InsertBookRes, error) {
 	panic("implement me")
 }

@@ -1,21 +1,31 @@
 package api
 
-type FooReq struct {
+type GetBookByISBNReq struct {
 }
 
-type FooRes struct {
+type GetBookByISBNRes struct {
 }
 
-type BarReq struct {
-}
-
-type BarRes struct {
-}
-
-func (req FooReq) Validate() error {
+func (req GetBookByISBNReq) Validate() error {
 	return nil
 }
 
-func (req BarReq) Validate() error {
+type GetBookByIDReq struct {
+}
+
+type GetBookByIDRes struct {
+}
+
+func (req GetBookByIDReq) Validate() error {
+	return nil
+}
+
+type InsertBookReq struct {
+}
+
+type InsertBookRes struct {
+}
+
+func (req InsertBookReq) Validate() error {
 	return nil
 }

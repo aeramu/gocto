@@ -5,7 +5,7 @@ package mocks
 import (
 	context "context"
 
-	api "github.com/aeramu/example/service/api"
+	api "github.com/aeramu/gocto/example/service/api"
 
 	mock "github.com/stretchr/testify/mock"
 )
@@ -15,21 +15,21 @@ type Service struct {
 	mock.Mock
 }
 
-// Bar provides a mock function with given fields: ctx, req
-func (_m *Service) Bar(ctx context.Context, req api.BarReq) (*api.BarRes, error) {
+// GetBookByID provides a mock function with given fields: ctx, req
+func (_m *Service) GetBookByID(ctx context.Context, req api.GetBookByIDReq) (*api.GetBookByIDRes, error) {
 	ret := _m.Called(ctx, req)
 
-	var r0 *api.BarRes
-	if rf, ok := ret.Get(0).(func(context.Context, api.BarReq) *api.BarRes); ok {
+	var r0 *api.GetBookByIDRes
+	if rf, ok := ret.Get(0).(func(context.Context, api.GetBookByIDReq) *api.GetBookByIDRes); ok {
 		r0 = rf(ctx, req)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*api.BarRes)
+			r0 = ret.Get(0).(*api.GetBookByIDRes)
 		}
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(context.Context, api.BarReq) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, api.GetBookByIDReq) error); ok {
 		r1 = rf(ctx, req)
 	} else {
 		r1 = ret.Error(1)
@@ -38,21 +38,44 @@ func (_m *Service) Bar(ctx context.Context, req api.BarReq) (*api.BarRes, error)
 	return r0, r1
 }
 
-// Foo provides a mock function with given fields: ctx, req
-func (_m *Service) Foo(ctx context.Context, req api.FooReq) (*api.FooRes, error) {
+// GetBookByISBN provides a mock function with given fields: ctx, req
+func (_m *Service) GetBookByISBN(ctx context.Context, req api.GetBookByISBNReq) (*api.GetBookByISBNRes, error) {
 	ret := _m.Called(ctx, req)
 
-	var r0 *api.FooRes
-	if rf, ok := ret.Get(0).(func(context.Context, api.FooReq) *api.FooRes); ok {
+	var r0 *api.GetBookByISBNRes
+	if rf, ok := ret.Get(0).(func(context.Context, api.GetBookByISBNReq) *api.GetBookByISBNRes); ok {
 		r0 = rf(ctx, req)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*api.FooRes)
+			r0 = ret.Get(0).(*api.GetBookByISBNRes)
 		}
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(context.Context, api.FooReq) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, api.GetBookByISBNReq) error); ok {
+		r1 = rf(ctx, req)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// InsertBook provides a mock function with given fields: ctx, req
+func (_m *Service) InsertBook(ctx context.Context, req api.InsertBookReq) (*api.InsertBookRes, error) {
+	ret := _m.Called(ctx, req)
+
+	var r0 *api.InsertBookRes
+	if rf, ok := ret.Get(0).(func(context.Context, api.InsertBookReq) *api.InsertBookRes); ok {
+		r0 = rf(ctx, req)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*api.InsertBookRes)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(context.Context, api.InsertBookReq) error); ok {
 		r1 = rf(ctx, req)
 	} else {
 		r1 = ret.Error(1)

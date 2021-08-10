@@ -1,4 +1,4 @@
-module github.com/aeramu/example
+module github.com/aeramu/gocto/example
 
 go 1.16
 

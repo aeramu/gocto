@@ -87,7 +87,7 @@ func (g *Generator) generateServiceFile() {
 	var serviceImplementations []types.Function
 	for _, methodName := range g.MethodsName {
 		implementFunction := serviceFunction(methodName)
-		serviceInterface.AddMethod(implementFunction.Method)
+		serviceInterface = serviceInterface.AddMethod(implementFunction.Method)
 		serviceImplementations = append(serviceImplementations, implementFunction)
 	}
 
@@ -157,7 +157,7 @@ func (g *Generator) generateInterfaceFile() {
 	adapter := types.NewStruct("Adapter")
 	var interfaces []types.Interface
 	for _, interfaceName := range g.InterfacesName {
-		adapter.AddVariable(types.NewVariable(interfaceName, interfaceName))
+		adapter = adapter.AddVariable(types.NewVariable(interfaceName, interfaceName))
 		interfaces = append(interfaces, types.NewInterface(interfaceName))
 	}
 
@@ -182,13 +182,13 @@ func (g *Generator) generateTestFile() {
 
 	initTest := types.NewFunction("initTest")
 	for _, interfaceName := range g.InterfacesName {
-		initTest.AddStatement("mock%s = new(mocks.%s)", interfaceName, interfaceName)
+		initTest = initTest.AddStatement("mock%s = new(mocks.%s)", interfaceName, interfaceName)
 	}
-	initTest.AddStatement("adapter = Adapter {")
+	initTest = initTest.AddStatement("adapter = Adapter {")
 	for _, interfaceName := range g.InterfacesName {
-		initTest.AddStatement("\t%s: mock%s,", interfaceName, interfaceName)
+		initTest = initTest.AddStatement("\t%s: mock%s,", interfaceName, interfaceName)
 	}
-	initTest.AddStatement("}")
+	initTest = initTest.AddStatement("}")
 
 	var testFunctions []types.Function
 	for _, methodName := range g.MethodsName {
